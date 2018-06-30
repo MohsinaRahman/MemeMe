@@ -10,6 +10,10 @@ import UIKit
 
 class ViewController: UIViewController
 {
+    
+    
+    @IBOutlet weak var tpoText: UITextField!
+    @IBOutlet weak var bottomText: UITextField!
     override func viewDidLoad()
     {
         super.viewDidLoad()
