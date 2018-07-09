@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  MemeMe
 //
-//  Created by Nabila Reza on 6/29/18.
+//  Created by Mohsina Rahman on 6/29/18.
 //  Copyright © 2018 Mohsina Rahman. All rights reserved.
 //
 
