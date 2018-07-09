@@ -6,10 +6,12 @@ An iOS app for creating a meme. Developed as part of Udacity's Nanodegree progra
 In this viewController, users can edit the top and bottom text
 
 
+
 ![alt text](https://github.com/MohsinaRahman/MemeMe/blob/master/edit_page.png "Edit Page")
 
 
 In this page, user can choose their photo from the camera or photo library 
+
 
 
 ![alt text](https://github.com/MohsinaRahman/MemeMe/blob/master/meme_page.png "Meme Page")
@@ -18,7 +20,9 @@ In this page, user can choose their photo from the camera or photo library
 in this page, user can share their pictures via facebook, social media or messenger, etc
 
 
+
 ![alt text](https://github.com/MohsinaRahman/MemeMe/blob/master/share_page.png "Share Page")
+
 
 # Tools
 * Xcode 9
