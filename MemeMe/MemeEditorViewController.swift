@@ -66,7 +66,7 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     
     @IBAction func pickImageFromCamera(_ sender: Any)
     {
-        
+        pickAnImage(from: .camera)
     }
     
     func configure(_ textField: UITextField, with defaultText: String)
@@ -75,6 +75,28 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         textField.defaultTextAttributes = memeTextAttributes
         textField.textAlignment = .center
         textField.delegate = self
+    }
+    
+    func pickAnImage(from source: UIImagePickerControllerSourceType)
+    {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = source
+        imagePicker.delegate = self
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ imagePickerController: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+    {
+        dismiss(animated: true, completion: nil)
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        {
+            imagePickerView.image = image
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ imagePickerController: UIImagePickerController)
+    {
+        dismiss(animated: true, completion: nil)
     }
     
     
