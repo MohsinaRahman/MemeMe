@@ -36,13 +36,15 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     override func viewWillAppear(_ animated: Bool)
     {
         super.viewWillAppear(animated)
-        
+        subscribeToKeyboardNotifications()
+
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
     }
     
     override func viewWillDisappear(_ animated: Bool)
     {
-        
+        unsubscribeToKeyboardNotifications()
+
         super.viewWillDisappear(animated)
     }
 
@@ -121,6 +123,40 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         let userInfo = notification.userInfo
         let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue
         return keyboardSize.cgRectValue.height
+    }
+    
+    func subscribeToKeyboardNotifications()
+    {
+        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    func unsubscribeToKeyboardNotifications()
+    {
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField)
+    {
+        if (topTextFieldCleared == false && textField == topTextView)
+        {
+            textField.text = ""
+            topTextFieldCleared = true
+        }
+        if (bottomTextFieldCleared == false && textField == bottomTextView)
+        {
+            textField.text = ""
+            bottomTextFieldCleared = true
+        }
+        lastTextFieldSelected = textField
     }
     
     
