@@ -26,28 +26,28 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     var lastTextFieldSelected:UITextField? = nil
     
     let memeTextAttributes:[String: Any] =
-    [
-        NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
-        NSAttributedStringKey.foregroundColor.rawValue: UIColor.white,
-        NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedStringKey.strokeWidth.rawValue: -3.0
+        [
+            NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
+            NSAttributedStringKey.foregroundColor.rawValue: UIColor.white,
+            NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+            NSAttributedStringKey.strokeWidth.rawValue: -3.0
     ]
     
     override func viewWillAppear(_ animated: Bool)
     {
         super.viewWillAppear(animated)
+        
         subscribeToKeyboardNotifications()
-
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
     }
     
     override func viewWillDisappear(_ animated: Bool)
     {
         unsubscribeToKeyboardNotifications()
-
+        
         super.viewWillDisappear(animated)
     }
-
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -58,12 +58,15 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     
     @IBAction func shareMeme(_ sender: Any)
     {
-        
+        let image = generateMemedImage()
+        let controller = UIActivityViewController(activityItems:[image], applicationActivities: nil)
+        controller.completionWithItemsHandler = activityViewControllerCompletion
+        present(controller, animated: true, completion: nil)
     }
-
+    
     @IBAction func pickAnImage(_ sender: Any)
     {
-        
+        pickAnImage(from: .photoLibrary)
     }
     
     @IBAction func pickImageFromCamera(_ sender: Any)
@@ -101,6 +104,18 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         dismiss(animated: true, completion: nil)
     }
     
+    func subscribeToKeyboardNotifications()
+    {
+        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    func unsubscribeToKeyboardNotifications()
+    {
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+    }
+    
     @objc func keyboardWillShow(_ notification: Notification)
     {
         if (lastTextFieldSelected! == bottomTextView)
@@ -125,18 +140,6 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         return keyboardSize.cgRectValue.height
     }
     
-    func subscribeToKeyboardNotifications()
-    {
-        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector (keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
-    }
-    
-    func unsubscribeToKeyboardNotifications()
-    {
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
-    }
-    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
@@ -159,6 +162,38 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         lastTextFieldSelected = textField
     }
     
+    func generateMemedImage() -> UIImage
+    {
+        showHideToolbars(hide: true)
+        
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
+        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
+        showHideToolbars(hide: false)
+        
+        return memedImage
+    }
     
+    func showHideToolbars(hide:Bool)
+    {
+        self.bottomToolBar.isHidden = hide
+        self.topNavigation.isHidden = hide
+    }
+    
+    func save()
+    {
+        let memedImage = generateMemedImage()
+        let _ = Meme(topText: topTextView.text!, bottomText: bottomTextView.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+    }
+    
+    func activityViewControllerCompletion(activity: UIActivityType?, completed: Bool, returnItems: [Any]?, activityError: Error?)
+    {
+        if completed
+        {
+            save()
+        }
+    }
 }
 
